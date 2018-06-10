@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.xzt.pdfreader">
+
     <uses-permission android:name="android.permission.BLUETOOTH" />
+
     <application
+        android:name=".Data"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -12,12 +15,21 @@
         <activity
             android:name=".BluetoothConnectActivity"
             android:label="@string/title_activity_bluetooth_connect"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
+            android:name=".UserSettingActivity"
+            android:label="@string/title_activity_user_setting"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".SettingClickActivity"
+            android:label="@string/title_activity_setting_click"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

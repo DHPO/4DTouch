@@ -31,6 +31,7 @@ public class BluetoothConnectActivity extends AppCompatActivity {
     private final UUID PORT_UUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");//Serial Port Service ID
     private OutputStream outputStream;
     private InputStream inputStream;
+    private int threshold=500;
     boolean stopThread;
     byte buffer[];
 
@@ -76,6 +77,7 @@ public class BluetoothConnectActivity extends AppCompatActivity {
                             if(device.getName().equals(targetDevice)){
                                 if(connect(device)){
                                     Toast.makeText(getApplicationContext(), "Connection established.", Toast.LENGTH_SHORT).show();
+                                    beginListenForData();
                                 }
                                 else{
                                     Toast.makeText(getApplicationContext(), "Connection failed.", Toast.LENGTH_SHORT).show();
@@ -153,7 +155,17 @@ public class BluetoothConnectActivity extends AppCompatActivity {
                             handler.post(new Runnable() {
                                 public void run()
                                 {
-                                    //do something when receive data "string"
+                                    String[] data=string.split("/");
+                                    for(int i=0;i<5;i++){
+                                        int p = Integer.parseInt(data[i]);
+                                        if(p>threshold){
+                                            Data.isFingerPress[i]=true;
+                                        }
+                                        else{
+                                            Data.isFingerPress[i]=false;
+                                        }
+                                    }
+
                                 }
                             });
 

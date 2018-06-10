@@ -4,4 +4,6 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_bluetooth_connect">BluetoothConnect</string>
+    <string name="title_activity_user_setting">Setting</string>
+    <string name="title_activity_setting_click">SettingClickActivity</string>
 </resources>
