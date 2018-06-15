@@ -78,6 +78,8 @@ public class BluetoothConnectActivity extends AppCompatActivity {
                                 if(connect(device)){
                                     Toast.makeText(getApplicationContext(), "Connection established.", Toast.LENGTH_SHORT).show();
                                     beginListenForData();
+                                    Intent intent=new Intent(BluetoothConnectActivity.this,UserSettingActivity.class);
+                                    startActivityForResult(intent,1);
                                 }
                                 else{
                                     Toast.makeText(getApplicationContext(), "Connection failed.", Toast.LENGTH_SHORT).show();
@@ -151,11 +153,12 @@ public class BluetoothConnectActivity extends AppCompatActivity {
                         {
                             byte[] rawBytes = new byte[byteCount];
                             inputStream.read(rawBytes);
-                            final String string=new String(rawBytes,"UTF-8");
+                            final String s=new String(rawBytes,"UTF-8");
                             handler.post(new Runnable() {
                                 public void run()
                                 {
-                                    String[] data=string.split("/");
+//                                    String[] data=s.split("a");
+                                    String[] data={"0","0","600","0","0"};
                                     for(int i=0;i<5;i++){
                                         int p = Integer.parseInt(data[i]);
                                         if(p>threshold){

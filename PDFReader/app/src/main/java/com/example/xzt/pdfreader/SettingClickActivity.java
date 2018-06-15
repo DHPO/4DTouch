@@ -10,7 +10,7 @@ import android.view.View;
 import android.widget.Button;
 
 public class SettingClickActivity extends AppCompatActivity {
-
+    boolean stopThread = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -26,8 +26,9 @@ public class SettingClickActivity extends AppCompatActivity {
 
         Thread thread  = new Thread(new Runnable()
         {
-            public void run() {
-                while(true){
+            public void run()
+            {
+                while(!Thread.currentThread().isInterrupted() && !stopThread){
                     for(int i=0;i<5;i++) {
                         if(Data.isFingerPress[i]){
                             Intent intent=getIntent();
@@ -37,11 +38,14 @@ public class SettingClickActivity extends AppCompatActivity {
                             intentBack.putExtra("key",i);
                             setResult(RESULT_OK,intentBack);
                             finish();
+                            stopThread=true;
+                            break;
                         }
                     }
                 }
             }
         });
+        thread.start();
 
 
 

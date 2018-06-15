@@ -10,13 +10,13 @@
         android:orientation="vertical">
 
         <Button
-            android:id="@+id/stopButton"
+            android:id="@+id/scanButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Scan" />
 
         <Button
-            android:id="@+id/scanButton"
+            android:id="@+id/stopButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"

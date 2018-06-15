@@ -15,6 +15,12 @@ public class UserSettingActivity extends AppCompatActivity {
     private int writeKey;
     private int settingKey;
 
+    TextView pageturnText;
+    TextView writeText;
+    TextView settingText;
+
+    final Data data=(Data)getApplication();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,11 +36,10 @@ public class UserSettingActivity extends AppCompatActivity {
         Button writeEditButton=(Button)findViewById(R.id.setting_write_button);
         Button settingEditButton=(Button)findViewById(R.id.setting_setting_button);
 
-        TextView pageturnText=(TextView)findViewById(R.id.setting_pageturn_text);
-        TextView writeText=(TextView)findViewById(R.id.setting_write_text);
-        TextView settingText=(TextView)findViewById(R.id.setting_setting_text);
+        pageturnText=(TextView)findViewById(R.id.setting_pageturn_text);
+        writeText=(TextView)findViewById(R.id.setting_write_text);
+        settingText=(TextView)findViewById(R.id.setting_setting_text);
 
-        final Data data=(Data)getApplication();
         pageturnText.setText(data.getFinger(pageturnKey));
         writeText.setText(data.getFinger(writeKey));
         settingText.setText(data.getFinger(settingKey));
@@ -52,6 +57,7 @@ public class UserSettingActivity extends AppCompatActivity {
                 Data.pageturnKey=pageturnKey;
                 Data.writeKey=writeKey;
                 Data.settingKey=settingKey;
+                finish();
             }
         });
 
@@ -85,20 +91,23 @@ public class UserSettingActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         switch(requestCode){
             case 1:
                 if(resultCode==RESULT_OK){
-                    String op=data.getStringExtra("op");
-                    int key=data.getIntExtra("key",0);
+                    String op=intent.getStringExtra("op");
+                    int key=intent.getIntExtra("key",0);
                     if(op.equals("pageturn")){
                         pageturnKey=key;
+                        pageturnText.setText(data.getFinger(pageturnKey));
                     }
                     else if(op.equals("write")){
                         writeKey=key;
+                        writeText.setText(data.getFinger(writeKey));
                     }
                     else if(op.equals("setting")){
                         settingKey=key;
+                        settingText.setText(data.getFinger(settingKey));
                     }
                 }
                 break;
