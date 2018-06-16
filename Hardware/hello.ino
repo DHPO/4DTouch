@@ -39,7 +39,7 @@ void readData(int *buf) {
 
 void sendData(int *data) {
   char buf[25];
-  sprintf(buf, "%d/%d/%d/%d/%d", data[0], data[1], data[2], data[3], data[4]);
+  sprintf(buf, "%da%da%da%da%d", data[0], data[1], data[2], data[3], data[4]);
   bt->send(buf);
 }
 
