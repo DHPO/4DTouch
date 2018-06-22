@@ -13,7 +13,6 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-
             android:name=".BluetoothConnectActivity"
             android:label="@string/title_activity_bluetooth_connect"
             android:theme="@style/AppTheme.NoActionBar">
@@ -26,13 +25,16 @@
         <activity
             android:name=".UserSettingActivity"
             android:label="@string/title_activity_user_setting"
-            android:theme="@style/AppTheme.NoActionBar">
-
-        </activity>
+            android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
             android:name=".SettingClickActivity"
             android:label="@string/title_activity_setting_click"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <service
+            android:name=".BluetoothConnectService"
+            android:enabled="true"
+            android:exported="true"></service>
     </application>
 
 </manifest>

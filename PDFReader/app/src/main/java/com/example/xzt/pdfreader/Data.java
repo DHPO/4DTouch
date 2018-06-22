@@ -11,6 +11,8 @@ public class Data extends Application{
     public static int writeKey=1;
     public static int settingKey=0;
     public static boolean[] isFingerPress={false,false,false,false,false};
+    public static String buffer="";
+    public static int index=0;
     public static String getFinger(int key){
         switch(key){
             case 0:

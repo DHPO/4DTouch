@@ -26,15 +26,6 @@ import java.util.Set;
 import java.util.UUID;
 
 public class BluetoothConnectActivity extends AppCompatActivity {
-
-    private BluetoothSocket socket;
-    private final UUID PORT_UUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");//Serial Port Service ID
-    private OutputStream outputStream;
-    private InputStream inputStream;
-    private int threshold=500;
-    boolean stopThread;
-    byte buffer[];
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,15 +66,11 @@ public class BluetoothConnectActivity extends AppCompatActivity {
                         String targetDevice=devices.get(position);
                         for (BluetoothDevice device : bondedDevices) {
                             if(device.getName().equals(targetDevice)){
-                                if(connect(device)){
-                                    Toast.makeText(getApplicationContext(), "Connection established.", Toast.LENGTH_SHORT).show();
-                                    beginListenForData();
-                                    Intent intent=new Intent(BluetoothConnectActivity.this,UserSettingActivity.class);
-                                    startActivityForResult(intent,1);
-                                }
-                                else{
-                                    Toast.makeText(getApplicationContext(), "Connection failed.", Toast.LENGTH_SHORT).show();
-                                }
+                                final Intent serviceIntent=new Intent(BluetoothConnectActivity.this,BluetoothConnectService.class);
+                                serviceIntent.putExtra("device",device);
+                                startService(serviceIntent);
+                                Intent intent=new Intent(BluetoothConnectActivity.this,UserSettingActivity.class);
+                                startActivityForResult(intent,1);
                             }
                         }
                     }
@@ -94,94 +81,8 @@ public class BluetoothConnectActivity extends AppCompatActivity {
         stopButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v){
-                stopThread = true;
-                try {
-                    outputStream.close();
-                    inputStream.close();
-                    socket.close();
-                }
-                catch(IOException e){
-
-                }
-                Toast.makeText(getApplicationContext(), "Connection closed.", Toast.LENGTH_SHORT).show();
+                BluetoothConnectService.stopFlag=true;
             }
         });
-    }
-
-    public boolean connect(BluetoothDevice device)
-    {
-        boolean connected=true;
-        try {
-            socket = device.createRfcommSocketToServiceRecord(PORT_UUID);
-            socket.connect();
-        } catch (IOException e) {
-            e.printStackTrace();
-            connected=false;
-        }
-        if(connected)
-        {
-            try {
-                outputStream=socket.getOutputStream();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            try {
-                inputStream=socket.getInputStream();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-        }
-        return connected;
-    }
-
-    void beginListenForData()
-    {
-        final Handler handler = new Handler();
-        stopThread = false;
-        buffer = new byte[1024];
-        Thread thread  = new Thread(new Runnable()
-        {
-            public void run()
-            {
-                while(!Thread.currentThread().isInterrupted() && !stopThread)
-                {
-                    try
-                    {
-                        int byteCount = inputStream.available();
-                        if(byteCount > 0)
-                        {
-                            byte[] rawBytes = new byte[byteCount];
-                            inputStream.read(rawBytes);
-                            final String s=new String(rawBytes,"UTF-8");
-                            handler.post(new Runnable() {
-                                public void run()
-                                {
-//                                    String[] data=s.split("a");
-                                    String[] data={"0","0","600","0","0"};
-                                    for(int i=0;i<5;i++){
-                                        int p = Integer.parseInt(data[i]);
-                                        if(p>threshold){
-                                            Data.isFingerPress[i]=true;
-                                        }
-                                        else{
-                                            Data.isFingerPress[i]=false;
-                                        }
-                                    }
-
-                                }
-                            });
-
-                        }
-                    }
-                    catch (IOException ex)
-                    {
-                        stopThread = true;
-                    }
-                }
-            }
-        });
-
-        thread.start();
     }
 }
