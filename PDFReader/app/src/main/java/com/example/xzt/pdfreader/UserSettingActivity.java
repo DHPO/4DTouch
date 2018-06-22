@@ -1,6 +1,7 @@
 package com.example.xzt.pdfreader;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -25,6 +26,11 @@ public class UserSettingActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_setting);
+
+        SharedPreferences pref=getSharedPreferences("data",MODE_PRIVATE);
+        Data.pageturnKey=pref.getInt("pageturnKey",2);
+        Data.writeKey=pref.getInt("writeKey",1);
+        Data.settingKey=pref.getInt("settingKey",0);
 
         pageturnKey = Data.pageturnKey;
         writeKey=Data.writeKey;
@@ -57,6 +63,11 @@ public class UserSettingActivity extends AppCompatActivity {
                 Data.pageturnKey=pageturnKey;
                 Data.writeKey=writeKey;
                 Data.settingKey=settingKey;
+                SharedPreferences.Editor editor=getSharedPreferences("data",MODE_PRIVATE).edit();
+                editor.putInt("pageturnKey",pageturnKey);
+                editor.putInt("writeKey",writeKey);
+                editor.putInt("settingKey",settingKey);
+                editor.commit();
                 finish();
             }
         });
