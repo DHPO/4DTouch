@@ -19,7 +19,7 @@ public class BluetoothConnectService extends Service {
     private final UUID PORT_UUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");//Serial Port Service ID
     private OutputStream outputStream;
     private InputStream inputStream;
-    private int threshold=500;
+    private int threshold=600;
     byte buffer[];
     public static boolean stopFlag=false;
 
@@ -34,29 +34,18 @@ public class BluetoothConnectService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        stopFlag=false;
         BluetoothDevice device=intent.getParcelableExtra("device");
-        if(connect(device)){
+        if(connect(device))
+        {
             Toast.makeText(getApplicationContext(), "Connection established.", Toast.LENGTH_SHORT).show();
             beginListenForData();
         }
-        else{
+        else
+        {
             Toast.makeText(getApplicationContext(), "Connection failed.", Toast.LENGTH_SHORT).show();
+            stopSelf(startId);
         }
-/*        while(true){
-            if(stopFlag){
-                try {
-                    outputStream.close();
-                    inputStream.close();
-                    socket.close();
-                }
-                catch(IOException e){
-
-                }
-                Toast.makeText(getApplicationContext(), "Connection closed.", Toast.LENGTH_SHORT).show();
-                stopFlag=false;
-                break;
-            }
-        }*/
         return START_STICKY;
     }
 
@@ -118,6 +107,9 @@ public class BluetoothConnectService extends Service {
                                             if(p>threshold){
                                                 Data.isFingerPress[Data.index]=true;
                                             }
+                                            else{
+                                                Data.isFingerPress[Data.index]=false;
+                                            }
                                             Data.index=0;
                                         }
                                         else if(s.charAt(i)==19){
@@ -149,9 +141,19 @@ public class BluetoothConnectService extends Service {
                         stopFlag = true;
                     }
                 }
+                try {
+                    inputStream.close();
+                    outputStream.close();
+                    socket.close();
+                }
+                catch (IOException e){
+
+                }
+                stopSelf();
             }
         });
 
         thread.start();
     }
+
 }

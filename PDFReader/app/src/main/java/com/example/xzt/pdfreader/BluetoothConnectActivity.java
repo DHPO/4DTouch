@@ -82,6 +82,7 @@ public class BluetoothConnectActivity extends AppCompatActivity {
             @Override
             public void onClick(View v){
                 BluetoothConnectService.stopFlag=true;
+                Toast.makeText(getApplicationContext(), "Connection closed.", Toast.LENGTH_SHORT).show();
             }
         });
     }
