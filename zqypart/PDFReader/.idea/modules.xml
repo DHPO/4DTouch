@@ -3,9 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/PDFReader.iml" filepath="$PROJECT_DIR$/PDFReader.iml" />
-      <module fileurl="file://C:\Users\xzt\Desktop\HCIproject\4DTouch\zqypart\PDFReader\PDFReader.iml" filepath="C:\Users\xzt\Desktop\HCIproject\4DTouch\zqypart\PDFReader\PDFReader.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://C:\Users\xzt\Desktop\HCIproject\4DTouch\zqypart\PDFReader\app\app.iml" filepath="C:\Users\xzt\Desktop\HCIproject\4DTouch\zqypart\PDFReader\app\app.iml" />
     </modules>
   </component>
 </project>

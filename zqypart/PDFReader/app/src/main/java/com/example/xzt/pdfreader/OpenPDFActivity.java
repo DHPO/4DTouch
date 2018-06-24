@@ -1,11 +1,18 @@
 package com.example.xzt.pdfreader;
 
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Looper;
 import android.support.v4.app.FragmentActivity;
+import android.view.ActionMode;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -20,13 +27,18 @@ import com.foxit.sdk.pdf.PDFDoc;
 import com.foxit.uiextensions.Module;
 import com.foxit.uiextensions.UIExtensionsManager;
 import com.foxit.uiextensions.annots.textmarkup.highlight.HighlightModule;
+import com.foxit.uiextensions.annots.ink.InkModule;
+import com.foxit.uiextensions.annots.ink.EraserModule;
 
 public class OpenPDFActivity extends FragmentActivity {
     private PDFViewCtrl pdfViewCtrl = null;
     private RelativeLayout parent = null;
     private UIExtensionsManager uiExtensionsManager = null;
     private HighlightModule highlightModule = null;
-    private Button btn_highlight = null;
+    private InkModule inkModule = null;
+    private EraserModule eraserModule = null;
+    private ActionMode mActionMode;
+    private Context mContext;
 
     private boolean using=false;
 
@@ -43,6 +55,8 @@ public class OpenPDFActivity extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        mContext=this;
+
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.openpdf);
@@ -57,7 +71,6 @@ public class OpenPDFActivity extends FragmentActivity {
         pdfViewCtrl = (PDFViewCtrl) findViewById(R.id.pdfviewer);
         parent = (RelativeLayout) findViewById(R.id.rd_main_id);
 
-        btn_highlight = (Button) findViewById(R.id.highlight_button);
 
         uiExtensionsManager = new UIExtensionsManager(this.getApplicationContext(), parent, pdfViewCtrl);
         uiExtensionsManager.setAttachedActivity(this);
@@ -72,6 +85,7 @@ public class OpenPDFActivity extends FragmentActivity {
         final int nightKey=pref.getInt("nightKey",2);
         final int eraserKey=pref.getInt("eraserKey",1);
         final int highlightKey=pref.getInt("highlightKey",0);
+        final int resetKey=pref.getInt("resetKey",0);
         Thread thread  = new Thread(new Runnable() {
             public void run() {
                 Looper.prepare();
@@ -102,6 +116,7 @@ public class OpenPDFActivity extends FragmentActivity {
                         if (res == pageturnKey) {
 
                         } else if (res == settingKey) {
+                            using=true;
                             Intent intent = new Intent();
                             intent.setClass(OpenPDFActivity.this,UserSettingActivity.class);
                             startActivity(intent);
@@ -111,9 +126,15 @@ public class OpenPDFActivity extends FragmentActivity {
                                 highlightModule = (HighlightModule) uiExtensionsManager.getModuleByName(Module.MODULE_NAME_HIGHLIGHT);
                             uiExtensionsManager.setCurrentToolHandler(highlightModule.getToolHandler());
                         } else if (res == eraserKey) {
-
+                            using=true;
+                            if (eraserModule == null)
+                                eraserModule = (EraserModule) uiExtensionsManager.getModuleByName(Module.MODULE_NAME_ERASER);
+                            uiExtensionsManager.setCurrentToolHandler(eraserModule.getToolHandler());
                         } else if (res == writeKey) {
-
+                            using=true;
+                            if (inkModule == null)
+                                inkModule = (InkModule) uiExtensionsManager.getModuleByName(Module.MODULE_NAME_INK);
+                            uiExtensionsManager.setCurrentToolHandler(inkModule.getToolHandler());
                         } else if (res == nightKey) {
                             using=true;
                             if(pdfViewCtrl.isNightMode()){
@@ -123,20 +144,17 @@ public class OpenPDFActivity extends FragmentActivity {
                                 pdfViewCtrl.setNightMode(true);
                             }
                         }
+                        else if (res == resetKey) {
+                            using=true;
+                            uiExtensionsManager.setCurrentToolHandler(null);
+                        }
                     }
                 }
             }
         });
         thread.start();
- /*       btn_highlight.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (highlightModule == null)
-                    highlightModule = (HighlightModule) uiExtensionsManager.getModuleByName(Module.MODULE_NAME_HIGHLIGHT);
-                uiExtensionsManager.setCurrentToolHandler(highlightModule.getToolHandler());
-            }
-        });*/
 
+        //文件路径
         Intent intent=getIntent();
         mPath=intent.getStringExtra("path");
 
@@ -147,21 +165,92 @@ public class OpenPDFActivity extends FragmentActivity {
         }catch(Exception e){
             e.printStackTrace();
         }
-/*
-        //到指定页
-        int total=pdfViewCtrl.getPageCount();
-        pdfViewCtrl.gotoPage(total-1);
 
-        //前翻
-        pdfViewCtrl.gotoLastPage();
 
-        //后翻
-        pdfViewCtrl.gotoNextPage();*/
 
-        //黑夜模式
-        //pdfViewCtrl.setNightMode(true);
+ /*       pdfViewCtrl.registerDoubleTapEventListener(new PDFViewCtrl.IDoubleTapEventListener() {
+            @Override
+            public boolean onSingleTapConfirmed(MotionEvent e) {
+                if (mActionMode == null) {
+                    mActionMode = ((Activity)mContext).startActionMode(mActionModeCallback);
+                }
+                else {
+                    mActionMode.finish();
+                    mActionMode = null;
+                }
+                return true;
+            }
+
+            @Override
+            public boolean onDoubleTap(MotionEvent e) {
+                return false;
+            }
+
+            @Override
+            public boolean onDoubleTapEvent(MotionEvent e) {
+                return false;
+            }
+        });
+
     }
 
+    private ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            getMenuInflater().inflate(R.menu.menu_pdfview,menu);
+            return true;
+        }
+
+        @Override
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            return false;
+        }
+
+        @Override
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.prevpage://前一页
+                    pdfViewCtrl.gotoPrevPage();
+                    break;
+                case R.id.nextpage://下一页
+                    pdfViewCtrl.gotoNextPage();
+                    break;
+                case R.id.nightmode://黑夜模式
+                    if(pdfViewCtrl.isNightMode()){
+                        pdfViewCtrl.setNightMode(false);
+                    }
+                    else
+                        pdfViewCtrl.setNightMode(true);
+                    break;
+                case R.id.highlight://高亮
+                    if (highlightModule == null)
+                        highlightModule = (HighlightModule) uiExtensionsManager.getModuleByName(Module.MODULE_NAME_HIGHLIGHT);
+                    uiExtensionsManager.setCurrentToolHandler(highlightModule.getToolHandler());
+                    break;
+                case R.id.pencil://铅笔
+                    if (inkModule == null)
+                        inkModule = (InkModule) uiExtensionsManager.getModuleByName(Module.MODULE_NAME_INK);
+                    uiExtensionsManager.setCurrentToolHandler(inkModule.getToolHandler());
+                    break;
+                case R.id.eraser://橡皮
+                    if (eraserModule == null) eraserModule = (EraserModule)
+                            uiExtensionsManager.getModuleByName(Module.MODULE_NAME_ERASER);
+                    uiExtensionsManager.setCurrentToolHandler(eraserModule.getToolHandler());
+                    break;
+                case R.id.cancel://取消
+                    uiExtensionsManager.setCurrentToolHandler(null);
+                    break;
+                default:
+                    break;
+            }
+            mode.finish();
+            return true;
+        }
+
+        @Override
+        public void onDestroyActionMode(ActionMode mode) {
+
+        }*/
+    };
 
     @Override
     protected void onDestroy(){

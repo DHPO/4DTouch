@@ -18,6 +18,7 @@ public class UserSettingActivity extends AppCompatActivity {
     private int nightKey;
     private int eraserKey;
     private int highlightKey;
+    private int resetKey;
 
     TextView pageturnText;
     TextView writeText;
@@ -25,6 +26,7 @@ public class UserSettingActivity extends AppCompatActivity {
     TextView nightText;
     TextView eraserText;
     TextView highlightText;
+    TextView resetText;
 
     final Data data=(Data)getApplication();
 
@@ -40,6 +42,7 @@ public class UserSettingActivity extends AppCompatActivity {
         nightKey=pref.getInt("nightKey",2);
         eraserKey=pref.getInt("eraserKey",1);
         highlightKey=pref.getInt("highlightKey",0);
+        resetKey=pref.getInt("highlightKey",0);
 
         Button backButton=(Button)findViewById(R.id.title_back);
         Button saveButton=(Button)findViewById(R.id.title_save);
@@ -49,6 +52,7 @@ public class UserSettingActivity extends AppCompatActivity {
         Button nightEditButton=(Button)findViewById(R.id.setting_night_button);
         Button eraserEditButton=(Button)findViewById(R.id.setting_eraser_button);
         Button highlightEditButton=(Button)findViewById(R.id.setting_highlight_button);
+        Button resetEditButton=(Button)findViewById(R.id.setting_reset_button);
 
         pageturnText=(TextView)findViewById(R.id.setting_pageturn_text);
         writeText=(TextView)findViewById(R.id.setting_write_text);
@@ -56,6 +60,7 @@ public class UserSettingActivity extends AppCompatActivity {
         nightText=(TextView)findViewById(R.id.setting_night_text);
         eraserText=(TextView)findViewById(R.id.setting_eraser_text);
         highlightText=(TextView)findViewById(R.id.setting_highlight_text);
+        resetText=(TextView)findViewById(R.id.setting_reset_text);
 
         pageturnText.setText(data.getFinger(pageturnKey));
         writeText.setText(data.getFinger(writeKey));
@@ -63,6 +68,7 @@ public class UserSettingActivity extends AppCompatActivity {
         nightText.setText(data.getFinger(nightKey));
         eraserText.setText(data.getFinger(eraserKey));
         highlightText.setText(data.getFinger(highlightKey));
+        resetText.setText(data.getFinger(resetKey));
 
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -81,6 +87,7 @@ public class UserSettingActivity extends AppCompatActivity {
                 editor.putInt("nightKey",nightKey);
                 editor.putInt("eraserKey",eraserKey);
                 editor.putInt("highlightKey",highlightKey);
+                editor.putInt("resetKey",resetKey);
                 editor.commit();
                 finish();
             }
@@ -140,6 +147,15 @@ public class UserSettingActivity extends AppCompatActivity {
             }
         });
 
+        resetEditButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(UserSettingActivity.this,SettingClickActivity.class);
+                intent.putExtra("op","reset");
+                startActivityForResult(intent,1);
+            }
+        });
+
     }
 
     @Override
@@ -167,6 +183,9 @@ public class UserSettingActivity extends AppCompatActivity {
                     if(highlightKey==key){
                         highlightKey=0;
                     }
+                    if(resetKey==key){
+                        resetKey=0;
+                    }
 
 
                     if(op.equals("pageturn")){
@@ -187,12 +206,16 @@ public class UserSettingActivity extends AppCompatActivity {
                     else if(op.equals("highlight")){
                         highlightKey=key;
                     }
+                    else if(op.equals("reset")){
+                        resetKey=key;
+                    }
                     pageturnText.setText(data.getFinger(pageturnKey));
                     writeText.setText(data.getFinger(writeKey));
                     settingText.setText(data.getFinger(settingKey));
                     nightText.setText(data.getFinger(nightKey));
                     eraserText.setText(data.getFinger(eraserKey));
                     highlightText.setText(data.getFinger(highlightKey));
+                    resetText.setText(data.getFinger(resetKey));
                 }
                 break;
             default:
