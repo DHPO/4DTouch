@@ -69,8 +69,7 @@ public class BluetoothConnectActivity extends AppCompatActivity {
                                 final Intent serviceIntent=new Intent(BluetoothConnectActivity.this,BluetoothConnectService.class);
                                 serviceIntent.putExtra("device",device);
                                 startService(serviceIntent);
-                                Intent intent=new Intent(BluetoothConnectActivity.this,UserSettingActivity.class);
-                                startActivityForResult(intent,1);
+                                finish();
                             }
                         }
                     }

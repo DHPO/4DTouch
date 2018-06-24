@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merger version="3"><dataSet config="main"><source path="C:\Users\xzt\Desktop\HCIproject\4DTouch\zqypart\HCILab\app\libs"><file name="FoxitRDKUIExtensions.aar" path="C:\Users\xzt\Desktop\HCIproject\4DTouch\zqypart\HCILab\app\libs\FoxitRDKUIExtensions.aar"/><file name="x86/librdk.so" path="C:\Users\xzt\Desktop\HCIproject\4DTouch\zqypart\HCILab\app\libs\x86\librdk.so"/></source></dataSet><dataSet config="debug"><source path="C:\Users\xzt\Desktop\HCIproject\4DTouch\zqypart\HCILab\app\src\debug\jniLibs"/></dataSet></merger>

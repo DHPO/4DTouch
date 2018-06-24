@@ -38,6 +38,9 @@ public class MainActivity extends AppCompatActivity {
         sbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Intent intent = new Intent();
+                intent.setClass(MainActivity.this,UserSettingActivity.class);
+                startActivity(intent);
             }
         });
     }

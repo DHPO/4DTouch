@@ -2,13 +2,16 @@ package com.example.xzt.pdfreader;
 
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Looper;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.foxit.sdk.PDFViewCtrl;
 import com.foxit.sdk.common.Library;
@@ -24,6 +27,8 @@ public class OpenPDFActivity extends FragmentActivity {
     private UIExtensionsManager uiExtensionsManager = null;
     private HighlightModule highlightModule = null;
     private Button btn_highlight = null;
+
+    private boolean using=false;
 
     String mPath = new String();
 
@@ -60,14 +65,77 @@ public class OpenPDFActivity extends FragmentActivity {
         pdfViewCtrl.setUIExtensionsManager(uiExtensionsManager);
         // Note: Here, filePath will be set with the total path of file.
 
-        btn_highlight.setOnClickListener(new View.OnClickListener() {
+        SharedPreferences pref=getSharedPreferences("data",MODE_PRIVATE);
+        final int pageturnKey=pref.getInt("pageturnKey",2);
+        final int writeKey=pref.getInt("writeKey",1);
+        final int settingKey=pref.getInt("settingKey",0);
+        final int nightKey=pref.getInt("nightKey",2);
+        final int eraserKey=pref.getInt("eraserKey",1);
+        final int highlightKey=pref.getInt("highlightKey",0);
+        Thread thread  = new Thread(new Runnable() {
+            public void run() {
+                Looper.prepare();
+                while (true) {
+                    int res = 0;
+                    for (int i = 0; i < 5; i++) {
+                        if (Data.isFingerPress[i]) {
+                            res |= (1 << i);
+                        }
+                    }
+                    if(using){
+                        if(res==0){
+                            using=false;
+                        }
+                        continue;
+                    }
+                    if (res != 0) {
+                        long starttime = System.currentTimeMillis();
+                        long curtime = System.currentTimeMillis();
+                        while (curtime - starttime < 200) {
+                            for (int i = 0; i < 5; i++) {
+                                if (Data.isFingerPress[i]) {
+                                    res |= (1 << i);
+                                }
+                            }
+                            curtime = System.currentTimeMillis();
+                        }
+                        if (res == pageturnKey) {
+
+                        } else if (res == settingKey) {
+                            Intent intent = new Intent();
+                            intent.setClass(OpenPDFActivity.this,UserSettingActivity.class);
+                            startActivity(intent);
+                        } else if (res == highlightKey) {
+                            using=true;
+                            if (highlightModule == null)
+                                highlightModule = (HighlightModule) uiExtensionsManager.getModuleByName(Module.MODULE_NAME_HIGHLIGHT);
+                            uiExtensionsManager.setCurrentToolHandler(highlightModule.getToolHandler());
+                        } else if (res == eraserKey) {
+
+                        } else if (res == writeKey) {
+
+                        } else if (res == nightKey) {
+                            using=true;
+                            if(pdfViewCtrl.isNightMode()){
+                                pdfViewCtrl.setNightMode(false);
+                            }
+                            else {
+                                pdfViewCtrl.setNightMode(true);
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        thread.start();
+ /*       btn_highlight.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (highlightModule == null)
                     highlightModule = (HighlightModule) uiExtensionsManager.getModuleByName(Module.MODULE_NAME_HIGHLIGHT);
                 uiExtensionsManager.setCurrentToolHandler(highlightModule.getToolHandler());
             }
-        });
+        });*/
 
         Intent intent=getIntent();
         mPath=intent.getStringExtra("path");
